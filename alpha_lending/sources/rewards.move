@@ -48,47 +48,4 @@ module alpha_lending::rewards {
         market_id: u64,
         reward_type: TypeName
     }
-
-    // Events
-    public struct RewardDistributorRefreshEvent has copy, drop {
-        market_id: u64,
-        reward_distributor_id: ID,
-        last_updated: u64,
-        total_xtokens: u64
-    }
-
-    public struct RewardUpdateEvent has copy, drop {
-        market_id: u64,
-        reward_id: ID,
-        coin_type: TypeName,
-        distributor_id: ID,
-        is_auto_compounded: bool,
-        auto_compound_market_id: u64,
-        total_rewards: u64,
-        start_time: u64,
-        end_time: u64,
-        distributed_rewards: Number,
-        cummulative_rewards_per_share: Number
-    }
-
-    public struct UserRewardDistributorRefreshEvent has copy, drop {
-        market_id: u64,
-        position_id: ID,
-        reward_distributor_id: ID,
-        share: u64,
-        last_updated: u64,
-        is_deposit: bool
-    }
-
-    public struct UserRewardUpdateEvent has copy, drop {
-        market_id: u64,
-        position_id: ID,
-        reward_id: ID,
-        coin_type: TypeName,
-        earned_rewards: Number,
-        cummulative_rewards_per_share: Number,
-        is_auto_compounded: bool,
-        auto_compound_market_id: u64
-    }
-   
 } 

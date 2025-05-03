@@ -58,11 +58,6 @@ module alpha_lending::position {
         lp_type: u8
     }
 
-    public struct TokenCollateral<phantom C> has store {
-        market_id: u64,
-        x_token: Balance<XToken<C>>,
-        reward_distributor_index: u64
-    }
 
     public struct Borrow has store {
         coin_type: TypeName,
@@ -71,27 +66,6 @@ module alpha_lending::position {
         borrow_time: u64,
         borrow_compounded_interest: Number,
         reward_distributor_index: u64
-    }
-
-    // Events
-    public struct PositionCreateEvent has copy, drop {
-        position_id: ID,
-        partner_id: Option<ID>
-    }
-
-    public struct PositionUpdateEvent has copy, drop {
-        position_id: ID,
-        partner_id: Option<ID>,
-        total_collateral_usd: Number,
-        safe_collateral_usd: Number,
-        liquidation_value: Number,
-        additional_permissible_borrow_usd: Number,
-        total_loan_usd: Number,
-        spot_total_loan_usd: Number,
-        weighted_total_loan_usd: Number,
-        weighted_spot_total_loan_usd: Number,
-        is_position_healthy: bool,
-        is_position_liquidatable: bool
     }
 
     public fun is_healthy (
