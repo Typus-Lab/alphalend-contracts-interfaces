@@ -12,14 +12,7 @@ module alpha_lending::market {
     // Public structs
     public struct XToken<phantom C> has drop, store {}
     
-    public struct TreasuryKey has drop, copy, store {}
-
-    public struct Treasury<phantom C> has store {
-        balance: Balance<C>,
-        supply: Supply<XToken<C>>,
-        market_fee: Balance<XToken<C>>,
-        protocol_fee: Balance<XToken<C>>,
-    }
+  
 
     public struct MarketConfig has store {
         safe_collateral_ratio: u8,
@@ -69,66 +62,7 @@ module alpha_lending::market {
         market_id: u64,
     }
 
-    // Events
-    public struct MarketConfigUpdateEvent has copy, drop {
-        market_id: u64,
-        safe_collateral_ratio: u8,
-        liquidation_threshold: u8,
-        deposit_limit: u64,
-        borrow_limit: u64,
-        partner_cap_required_for_deposit: bool,
-        partner_cap_required_for_borrow: bool,
-        borrow_fee_bps: u64,
-        deposit_fee_bps: u64,
-        withdraw_fee_bps: u64,
-        collateral_types: vector<TypeName>,
-        interest_rate_kinks: vector<u8>,
-        interest_rates: vector<u16>,
-        liquidation_bonus_bps: u64,
-        liquidation_fee_bps: u64,
-        spread_fee_bps: u64,
-        isolated: bool,
-        cascade_market_id: u64,
-        protocol_fee_share_bps: u64,
-        protocol_spread_fee_share_bps: u64,
-        time_lock: u64,
-        last_updated: u64,
-        is_native: bool,
-        borrow_weight: Number,
-        active: bool,
-        close_factor_percentage: u8,
-    }
-
-    public struct MarketDataUpdateEvent has copy, drop {
-        market_id: u64,
-        coin_type: TypeName,
-        xtoken_type: TypeName,
-        xtoken_supply: u64,
-        xtoken_ratio: Number,
-        borrowed_amount: u64,
-        writeoff_amount: u64,
-        balance_holding: u64,
-        unclaimed_spread_fee: u64,
-        unclaimed_spread_fee_protocol: u64,
-        compounded_interest: Number,
-        last_auto_compound: u64,
-        price_identifier: PriceIdentifier,
-        decimal_digit: Number,
-    }
-
-    public struct MarketTreasuryUpdateEvent has copy, drop {
-        market_id: u64,
-        balance: u64,
-        supply: u64,
-        market_fee: u64,
-        protocol_fee: u64
-    }
-
-    public struct FeeEarnedEvent has copy, drop {
-        coin_type: TypeName,
-        market_fee: u64,
-        protocol_fee: u64
-    }
+   
 
     public struct LiquidityPromise<phantom C> has store {
         market_id: u64,
