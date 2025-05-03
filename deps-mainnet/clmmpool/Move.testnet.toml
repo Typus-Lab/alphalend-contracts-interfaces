@@ -1,0 +1,14 @@
+# mainnet
+# --------------------------
+[package]
+name = "CetusClmm"
+version = "testnet"
+published-at = "0xd45b32d49bd6c545b2932113d7ae3a95c0499b4a22f9e73484b8301dac1f1bf2"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "testnet" }
+MoveSTL = { local = "../move-stl" }
+IntegerMate = { local = "../integer-mate" }
+
+[addresses]
+cetus_clmm = "0xd45b32d49bd6c545b2932113d7ae3a95c0499b4a22f9e73484b8301dac1f1bf2"
