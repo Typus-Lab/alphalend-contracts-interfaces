@@ -1,0 +1,12 @@
+[package]
+name = "BluefinSpot"
+version = "1.0.0"
+published-at = "0x2ff09f048f0ff2c4c8b4603e45e5e0a4f91755ac8932e4daee9f39cbd44abb47"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "testnet", override=true }
+CetusClmm = { local = "../clmmpool", override=true }
+IntegerMate = { local = "../integer-mate", override = true }
+
+[addresses]
+bluefin_spot = "0x2ff09f048f0ff2c4c8b4603e45e5e0a4f91755ac8932e4daee9f39cbd44abb47"
