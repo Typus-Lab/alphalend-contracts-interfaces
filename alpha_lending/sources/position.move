@@ -10,6 +10,27 @@ module alpha_lending::position {
     use alpha_lending::rewards::{UserRewardDistributor};
     use alphafi_stdlib::math::Number;
 
+
+/// Error when attempting to liquidate a healthy position
+    const ErrNotEligbleForLiquidation: u64 = 0;
+    /// Error when attempting to liquidate with incorrect coin type
+    const ErrWrongCoinTypeForLiquidation: u64 = 1;
+    /// Error when accessing a position that hasn't been refreshed
+    const ErrStalePosition: u64 = 2;
+    /// Error when attempting to withdraw more collateral than available
+    const ErrInsufficientCollateral: u64 = 3;
+    /// Error when attempting to remove collateral while loans are outstanding
+    const ErrBorrowNotFullyRepaid: u64 = 4;
+    /// Error when attempting to interact with wrong Bluefin pool
+    const ErrWrongPool: u64 = 5;
+    /// Error when attempting to write off a position with remaining collateral
+    const ErrPositionNoWriteoff: u64 = 6;
+    /// Error when attempting to interact with stale LP position
+    const ErrStaleLPPosition: u64 = 7;
+    /// Error when attempting to interact with wrong LP position
+    const ErrWrongLPPosition: u64 = 8;
+    /// Error when attempting to interact with wrong position type
+    const ErrInvalidPositionType: u64 = 9;
     // Public structs
     public struct PositionCap has store, key {
         id: UID,
