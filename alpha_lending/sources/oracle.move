@@ -6,6 +6,8 @@ module alpha_lending::oracle {
     use alphafi_oracle::oracle::PriceInfo as OraclePriceInfo;
     use sui::object::UID;
 
+    // Oracle price not updated for a while
+    const ErrStaleOraclePrice: u64 = 0;
     // Public structs
     public struct PriceIdentifier has copy, drop, store {
         coin_type: TypeName,
@@ -23,5 +25,16 @@ module alpha_lending::oracle {
         price: Number,
         ema_price: Number,
         last_updated: u64,
+    }
+
+    /// Updates the price information for a specific coin
+    /// * `oracle` - Mutable reference to the oracle
+    /// * `price_identifier` - Price identifier for the coin
+    /// * `price` - New price information
+    public fun update_price(
+        oracle: &mut Oracle,
+        price: &OraclePriceInfo
+    ) {
+        abort 0
     }
 } 

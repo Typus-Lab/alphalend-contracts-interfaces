@@ -1,4 +1,11 @@
 /// Interface for the Alpha Lending protocol that handles lending, borrowing, and liquidation operations
+/// This module provides the core functionality for a decentralized lending protocol on Sui
+/// It allows users to:
+/// - Create lending positions
+/// - Add/remove collateral
+/// - Borrow and repay assets
+/// - Liquidate undercollateralized positions
+/// - Handle rewards and fees
 module alpha_lending::alpha_lending {
     use sui::coin::{Coin};
     use sui::clock::{Clock};
@@ -16,9 +23,49 @@ module alpha_lending::alpha_lending {
     use sui::table::{Table};
     use sui::sui::SUI;
 
-    // Public structs
-    public struct ALPHA_LENDING has drop {}
+    // Error codes for alpha lending
+    // When user tries to remove collateral more than the position has or allowed by the protocol   
+    const ErrNotEnoughCollateral: u64 = 0;
+    // When user tries to borrow more than the permitted value
+    const ErrTooMuchBorrow: u64 = 1;
+    // When user tries to borrow from isolated market with other collateral
+    const ErrIsolatedMarketBorrowWithOther: u64 = 2;
+    // When user tries to liquidate a position not eligible for liquidation
+    const ErrNotEligbleForLiquidation: u64 = 4;
+    // When protocol version is invalid. Can be fixed by upgrading to latest contract.
+    const ErrInvalidProtocolVersion: u64 = 8;
+    // When hot potato position mismatch. Can be fixed by upgrading to latest contract.
+    const ErrHotPotatoPositionMismatch: u64 = 9;
+    // Occurs when depositing to or borrowing from an inactive market
+    const ErrMarketNotActive: u64 = 23; 
+    // When market id provided for the transaction is invalid
+    const ErrInvalidMarketID: u64 = 25;
+    // When trying to deposit to a market from which the position had borrowed
+    const ErrCannotDepositToBorrowedMarket: u64 = 29;
+    // When trying to borrow from an market that the position had deposited into
+    const ErrCannotBorrowFromDepositedMarket: u64 = 30;
+    // When trying to add collateral with zero value.
+    const ErrInvalidCollateralAmount: u64 = 31;
+    // When tring to borrow zero amount
+    const ErrInvalidBorrowAmount: u64 = 32;
+    // When trying to repay zero amount
+    const ErrInvalidRepayAmount: u64 = 33;
+    // When promise function called for the promise coin type
+    const ErrInvalidPromiseCoinType: u64 = 34;
+    // When SUI market is not found
+    const ErrSuiMarketNotFound: u64 = 36;
+    // When deposit limit is exceeded   
+    const ErrDepositLimitExceeded: u64 = 37;
 
+    /// Main protocol state that manages all lending operations
+    /// Contains:
+    /// - Positions table mapping position IDs to Position objects
+    /// - Markets table mapping market IDs to Market objects
+    /// - Oracle for price feeds
+    /// - Protocol fee address
+    /// - Version tracking
+    /// - Protocol configuration
+    /// - Admin capabilities
     public struct LendingProtocol has key, store {
         id: UID,
         lending_protocol_cap_id: ID,
@@ -31,6 +78,11 @@ module alpha_lending::alpha_lending {
         admin_cap_id: ID
     }
 
+    /// Configuration parameters for the lending protocol
+    /// Defines various thresholds and limits for:
+    /// - Collateral ratios
+    /// - Liquidation parameters
+    /// - LP position parameters
     public struct LendingProtocolConfig has store {
         max_safe_collateral_ratio: u8,
         max_liquidation_threshold: u8,
@@ -40,18 +92,16 @@ module alpha_lending::alpha_lending {
         lp_position_liquidation_threshold: u8,
     }
 
-    public struct LendingProtocolCap has key, store {
-        id: UID,
-    }
 
 
-
+    /// Hot potato struct for handling LP position borrow operations
     public struct LpPositionBorrowHotPotato has drop {
         position_id: ID,
         lp_position_id: ID
     }
 
-    // Public functions
+    /// Creates a new lending position
+    /// Returns a PositionCap that can be used to manage the position
     public fun create_position(
         protocol: &mut LendingProtocol,
         ctx: &mut TxContext
@@ -59,6 +109,14 @@ module alpha_lending::alpha_lending {
         abort 0
     }
 
+    /// Adds collateral to a position
+    /// @param protocol - The lending protocol instance
+    /// @param position_cap - Capability for the position
+    /// @param market_id - ID of the market for the collateral
+    /// @param coin - The collateral coin to add
+    /// @param clock - Current time reference
+    /// @param ctx - Transaction context
+    /// @return Any remaining coin if it cannot be added to the position
     public fun add_collateral<C>(
         protocol: &mut LendingProtocol,
         position_cap: &PositionCap,
@@ -70,6 +128,14 @@ module alpha_lending::alpha_lending {
         abort 0
     }
 
+    /// Removes collateral from a position
+    /// @param protocol - The lending protocol instance
+    /// @param position_cap - Capability for the position
+    /// @param market_id - ID of the market for the collateral
+    /// @param amount - Amount of collateral to remove
+    /// @param clock - Current time reference
+    /// @param ctx - Transaction context
+    /// @return Returns a LiquidityPromise for the removed collateral. Need to call fulfill_promise to receive the collateral back.
     public fun remove_collateral<C>(
         protocol: &mut LendingProtocol,
         position_cap: &PositionCap,
@@ -77,10 +143,18 @@ module alpha_lending::alpha_lending {
         amount: u64,
         clock: &Clock,
         ctx: &mut TxContext
-    ): Coin<C> {
+    ): LiquidityPromise<C> {
         abort 0
     }
 
+    /// Borrows assets from a position
+    /// @param protocol - The lending protocol instance
+    /// @param position_cap - Capability for the position
+    /// @param market_id - ID of the market to borrow from
+    /// @param amount - Amount to borrow
+    /// @param clock - Current time reference
+    /// @param ctx - Transaction context
+    /// @return Returns a LiquidityPromise for the borrowed coin. Need to call fulfill_promise to receive the borrowed coin.
     public fun borrow<C>(
         protocol: &mut LendingProtocol,
         position_cap: &PositionCap,
@@ -88,10 +162,18 @@ module alpha_lending::alpha_lending {
         amount: u64,
         clock: &Clock,
         ctx: &mut TxContext
-    ): Coin<C> {
+    ): LiquidityPromise<C> {
         abort 0
     }
 
+    /// Repays borrowed assets to a position
+    /// @param protocol - The lending protocol instance
+    /// @param position_cap - Capability for the position
+    /// @param market_id - ID of the market to repay to
+    /// @param coin - The coin to repay
+    /// @param clock - Current time reference
+    /// @param ctx - Transaction context
+    /// @return Any remaining coin after repayment
     public fun repay<C>(
         protocol: &mut LendingProtocol,
         position_cap: &PositionCap,
@@ -103,6 +185,15 @@ module alpha_lending::alpha_lending {
         abort 0
     }
 
+    /// Liquidates an undercollateralized position
+    /// @param protocol - The lending protocol instance
+    /// @param liquidate_position_id - ID of the position to liquidate
+    /// @param borrow_market_id - ID of the market with the borrowed asset
+    /// @param withdraw_market_id - ID of the market to withdraw collateral from
+    /// @param repay_coin - Coin used to repay the borrowed amount
+    /// @param clock - Current time reference
+    /// @param ctx - Transaction context
+    /// @return Tuple of (liquidity promise for collateral, remaining repay coin). The liquidity promise needs to be fulfilled to receive the collateral.
     public fun liquidate<B,D>(
         protocol: &mut LendingProtocol,
         liquidate_position_id: ID,
@@ -111,66 +202,55 @@ module alpha_lending::alpha_lending {
         repay_coin: Coin<B>,
         clock: &Clock,
         ctx: &mut TxContext
-    ): (Coin<D>, Coin<B>) {
+    ): (LiquidityPromise<D>, Coin<B>) {
         abort 0
     }
 
-    public fun liquidate_lp_position<A,B,Borrow>(
-        protocol: &mut LendingProtocol,
-        liquidate_position_id: ID,
-        borrow_market_id: u64,
-        bf_pool: &mut BFPool<A,B>,
-        repay_coin: Coin<Borrow>,
-        bf_config: &BFConfig,
-        clock: &Clock,
-        ctx: &mut TxContext
-    ): (Coin<A>, Coin<B>, Coin<Borrow>) {
-        abort 0
-    }
 
-    public fun add_reward<C>(
-        protocol: &mut LendingProtocol,
-        market_id: u64,
-        market_cap: &MarketCap,
-        is_deposit: bool,
-        balance: Balance<C>,
-        start_time: u64,
-        end_time: u64,
-        clock: &Clock,
-        ctx: &mut TxContext
-    ) {
-        abort 0
-    }
-
+    /// Collects rewards from a position
+    /// @param protocol - The lending protocol instance
+    /// @param market_id - ID of the market to collect rewards from
+    /// @param position_cap - Capability for the position
+    /// @param clock - Current time reference
+    /// @param ctx - Transaction context
+    /// @return Tuple of (reward coin, liquidity promise). The liquidity promise needs to be fulfilled to receive the full reward.
     public fun collect_reward<C>(
         protocol: &mut LendingProtocol,
         market_id: u64,
         position_cap: &PositionCap,
         clock: &Clock,
         ctx: &mut TxContext
-    ): Coin<C> {
+    ): (Coin<C>, LiquidityPromise<C>) {
         abort 0
     }
 
+    /// Collects rewards and deposits them back into the position
+    /// @param protocol - The lending protocol instance
+    /// @param market_id - ID of the market to collect rewards from
+    /// @param position_cap - Capability for the position
+    /// @param clock - Current time reference
+    /// @param ctx - Transaction context
+    /// @return Tuple of (remaining reward coin, liquidity promise). The liquidity promise needs to be fulfilled to receive the full reward.
     public fun collect_reward_and_deposit<C>(
         protocol: &mut LendingProtocol,
         market_id: u64,
         position_cap: &PositionCap,
         clock: &Clock,
         ctx: &mut TxContext
-    ): Coin<C> {
+    ): (Coin<C>, LiquidityPromise<C>) {
         abort 0
     }
 
-    public fun withdraw_market_fee<C>(
-        protocol: &mut LendingProtocol,
-        market_cap: &MarketCap,
-        clock: &Clock,
-        ctx: &mut TxContext
-    ): Coin<C> {
-        abort 0
-    }
+ 
 
+    /// Performs a loan bailout operation
+    /// @param protocol - The lending protocol instance
+    /// @param market_id - ID of the market
+    /// @param position_id - ID of the position to bailout
+    /// @param coin - Coin used for bailout
+    /// @param clock - Current time reference
+    /// @param ctx - Transaction context
+    /// @return Any remaining bailout coin
     public fun loan_bailout<C>(
         protocol: &mut LendingProtocol,
         market_id: u64,
@@ -182,114 +262,11 @@ module alpha_lending::alpha_lending {
         abort 0
     }
 
-    public fun add_market<C>(
-        protocol: &mut LendingProtocol,
-        liquidity: Coin<C>,
-        safe_collateral_ratio: u8,
-        liquidation_threshold: u8,
-        deposit_limit: u64,
-        borrow_limit: u64,
-        borrow_fee_bps: u64,
-        deposit_fee_bps: u64,
-        withdraw_fee_bps: u64,
-        price_identifier: PriceIdentifier,
-        collateral_types: vector<TypeName>,
-        interest_rate_kinks: vector<u8>,
-        interest_rates: vector<u16>,
-        liquidation_bonus_bps: u64,
-        liquidation_fee_bps: u64,
-        spread_fee_bps: u64,
-        cascade_market_id: u64,
-        protocol_fee_share_bps: u64,
-        decimal_digit: u8,
-        clock: &Clock,
-        ctx: &mut TxContext
-    ): MarketCap {
-        abort 0
-    }
-
-    public fun update_market_deposit_limit(
-        protocol: &mut LendingProtocol,
-        market_id: u64,
-        market_cap: &MarketCap,
-        deposit_limit: u64,
-        clock: &Clock
-    ) {
-        abort 0
-    }
-
-    public fun update_market_borrow_limit(
-        protocol: &mut LendingProtocol,
-        market_id: u64,
-        market_cap: &MarketCap,
-        borrow_limit: u64,
-        clock: &Clock
-    ) {
-        abort 0
-    }
-
-    public fun update_flow_limiter(
-        protocol: &mut LendingProtocol,
-        market_cap: &MarketCap,
-        is_deposit: bool,
-        max_rate: u64,
-        window_duration: u64,
-        clock: &Clock
-    ) {
-        abort 0
-    }
-
-    public fun get_version(protocol: &LendingProtocol): u64 {
-        abort 0
-    }
-
-    public fun update_market_fee_config(
-        protocol: &mut LendingProtocol,
-        market_cap: &MarketCap,
-        borrow_fee_bps: u64,
-        deposit_fee_bps: u64,
-        withdraw_fee_bps: u64,
-        spread_fee_bps: u64,
-        borrow_weight_bps: u64,
-        clock: &Clock
-    ) {
-        abort 0
-    }
-
-    public fun update_market_collateral_ratios(
-        protocol: &mut LendingProtocol,
-        market_id: u64,
-        market_cap: &MarketCap,
-        safe_collateral_ratio: u8,
-        liquidation_threshold: u8,
-        clock: &Clock
-    ) {
-        abort 0
-    }
-
-    public fun update_market_interest_rate_config(
-        protocol: &mut LendingProtocol,
-        market_id: u64,
-        market_cap: &MarketCap,
-        interest_rate_kinks: vector<u8>,
-        interest_rates: vector<u16>,
-        clock: &Clock
-    ) {
-        abort 0
-    }
-
-    public fun update_market_liquidation_config(
-        protocol: &mut LendingProtocol,
-        market_id: u64,
-        market_cap: &MarketCap,
-        liquidation_bonus_bps: u64,
-        liquidation_fee_bps: u64,
-        close_factor_percentage: u8,
-        clock: &Clock
-    ) {
-        abort 0
-    }
-
+    /// Returns the claimable rewards for a position
+    /// @param protocol - The lending protocol instance
+    /// @param position_cap - Capability for the position
+    /// @param clock - Current time reference
+    /// @return The claimable rewards for the position
     public fun get_claimable_rewards(
         protocol: &mut LendingProtocol,
         position_cap: &PositionCap,
@@ -298,70 +275,14 @@ module alpha_lending::alpha_lending {
         abort 0
     }
 
-    public fun add_bluefin_lp_collateral<A,B>(
-        protocol: &mut LendingProtocol,
-        position_cap: &PositionCap,
-        lp_position: BFPosition,
-        pool: &BFPool<A,B>,
-        clock: &Clock,
-        ctx: &mut TxContext
-    ) {
-        abort 0
-    }
-
-    public fun borrow_bluefin_lp_collateral(
-        protocol: &mut LendingProtocol,
-        position_cap: &PositionCap,
-        _ctx: &mut TxContext
-    ): (BFPosition, LpPositionBorrowHotPotato) {
-        abort 0
-    }
-
-    public fun return_bluefin_lp_collateral<A,B>(
-        protocol: &mut LendingProtocol,
-        position_cap: &PositionCap,
-        pool: &BFPool<A,B>,
-        bf_position: BFPosition,
-        hot_potato: LpPositionBorrowHotPotato,
-        clock: &Clock,
-        _ctx: &mut TxContext
-    ) {
-        abort 0
-    }
-
-    public fun update_bluefin_lp_collateral_usd_value<A,B>(
-        protocol: &mut LendingProtocol,
-        position_id: ID,
-        pool: &BFPool<A,B>,
-        clock: &Clock
-    ) {
-        abort 0
-    }
-
-    public fun remove_bluefin_lp_collateral(
-        protocol: &mut LendingProtocol,
-        position_cap: &PositionCap
-    ): BFPosition {
-        abort 0
-    }
-
-    public fun update_market_active(
-        protocol: &mut LendingProtocol,
-        market_cap: &MarketCap,
-        active: bool,
-        clock: &Clock
-    ) {
-        abort 0
-    }
-
-    public fun create_position_for_partner(
-        protocol: &mut LendingProtocol,
-        partner_id: ID,
-        ctx: &mut TxContext
-    ): PositionCap {
-        abort 0
-    }
-
+    /// Fulfill a liquidity promise (For non-SUI assets)
+    /// @param protocol - The lending protocol instance
+    /// @param market_id - ID of the market
+    /// @param position_cap - Capability for the position
+    /// @param promise - The liquidity promise to fulfill
+    /// @param clock - Current time reference
+    /// @param ctx - Transaction context
+    /// @return The fulfilled coin
     public fun fulfill_promise<C>(
         protocol: &mut LendingProtocol,
         market_id: u64,
@@ -373,6 +294,14 @@ module alpha_lending::alpha_lending {
         abort 0
     }
 
+    /// Fulfill a liquidity promise for SUI
+    /// @param protocol - The lending protocol instance
+    /// @param market_id - ID of the market
+    /// @param position_cap - Capability for the position
+    /// @param promise - The liquidity promise to fulfill
+    /// @param clock - Current time reference
+    /// @param ctx - Transaction context
+    /// @return The fulfilled SUI coin
     public fun fulfill_promise_SUI(
         protocol: &mut LendingProtocol,
         market_id: u64,

@@ -12,6 +12,28 @@ module alpha_lending::market {
     // Public structs
     public struct XToken<phantom C> has drop, store {}
     
+    // Trying to transact with a market that is not refreshed
+    const ErrMarketNotRefreshed :u64 = 3;
+    // Market does not have enough tokens to borrow
+    const ErrNotEnoughTokensToBorrow:u64 = 4;
+    // Coin type and market do not match
+    const ErrCoinTypeMisMatched:u64 = 5;  
+    // Maret does not have enought liquidity to withdraw
+    const ErrNotEnoughLiquidity:u64 = 14;
+    // XToken ratio decreased
+    const ErrXTokenRatioDecreased:u64 = 23;
+    // Tyring to borrow more than the borrow limit
+    const ErrBorrowLimitExceeded:u64 = 30;
+    // Tyring to borrow more than the borrow limit
+    const ErrInvalidBorrowLimitPercentage:u64 = 31;
+    // Could not fulfill promise
+    const ErrCouldNotFulfillPromise:u64 = 37;
+    // Could not fulfill promise fee
+    const ErrCouldNotFulfillPromiseFee:u64 = 38;
+    // Invalid promise market id
+    const ErrInvalidPromiseMarketId:u64 = 39;
+    // Not enough SUI to borrow
+    const ErrNotEnoughSuiToBorrow:u64 = 42;
   
 
     public struct MarketConfig has store {
