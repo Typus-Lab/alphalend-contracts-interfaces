@@ -116,7 +116,6 @@ module alpha_lending::alpha_lending {
     /// @param coin - The collateral coin to add
     /// @param clock - Current time reference
     /// @param ctx - Transaction context
-    /// @return Any remaining coin if it cannot be added to the position
     public fun add_collateral<C>(
         protocol: &mut LendingProtocol,
         position_cap: &PositionCap,
@@ -124,7 +123,7 @@ module alpha_lending::alpha_lending {
         coin: Coin<C>,
         clock: &Clock,
         ctx: &mut TxContext
-    ): Coin<C> {
+    ){
         abort 0
     }
 
