@@ -311,4 +311,52 @@ module alpha_lending::alpha_lending {
     ): Coin<SUI> {
         abort 0
     }
+
+    /// Get the safe collateral ratio for a market
+    /// @param market_id - ID of the market
+    /// @return The safe collateral ratio for the market in terms of percentage
+    public fun get_safe_collateral_ratio(
+        self: &LendingProtocol,
+        market_id: u64,
+    ) : u8 {
+        abort 0
+    }
+
+    /// Get the borrow amount for a position in a market
+    /// @param market_id - ID of the market
+    /// @param position_id - ID of the position
+    /// @param clock - Current time reference
+    /// @return The borrow amount for the position in the market
+    public fun get_borrow_amount(
+        self: &mut LendingProtocol,
+        market_id: u64,
+        position_id: ID,
+        clock: &Clock,
+    ) : u64 {
+        abort 0
+    }
+
+    /// Get the collateral amount for a position in a market
+    /// @param market_id - ID of the market
+    /// @param position_id - ID of the position
+    /// @param clock - Current time reference
+    /// @return The collateral amount for the position in the market
+    public fun get_collateral_amount(
+        self: &mut LendingProtocol,
+        market_id: u64,
+        position_id: ID,
+        clock: &Clock,
+    ) : u64 {
+        abort 0
+    }
+
+    /// Get the price of an asset in the market
+    /// @param market_id - ID of the market
+    /// @return The price of the asset in the market
+    public fun get_asset_price (
+        self: &mut LendingProtocol,
+        market_id: u64,
+    ) : u64 {
+        abort 0
+    }
 } 
