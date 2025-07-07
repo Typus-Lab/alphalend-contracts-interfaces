@@ -284,8 +284,6 @@ module alpha_lending::alpha_lending {
     /// @return The fulfilled coin
     public fun fulfill_promise<C>(
         protocol: &mut LendingProtocol,
-        market_id: u64,
-        position_cap: &PositionCap,
         promise: LiquidityPromise<C>,
         clock: &Clock,
         ctx: &mut TxContext
@@ -303,8 +301,6 @@ module alpha_lending::alpha_lending {
     /// @return The fulfilled SUI coin
     public fun fulfill_promise_SUI(
         protocol: &mut LendingProtocol,
-        market_id: u64,
-        position_cap: &PositionCap,
         promise: LiquidityPromise<SUI>,
         clock: &Clock,
         ctx: &mut TxContext
