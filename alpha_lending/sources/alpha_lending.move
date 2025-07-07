@@ -141,7 +141,6 @@ module alpha_lending::alpha_lending {
         market_id: u64,
         amount: u64,
         clock: &Clock,
-        ctx: &mut TxContext
     ): LiquidityPromise<C> {
         abort 0
     }
