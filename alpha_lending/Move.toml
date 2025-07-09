@@ -8,7 +8,8 @@ published-at = "0xee754fc0c6d977403c9218cedbfffed033b4b42b50a65c2c3f1c7be13efeaf
 
 [dependencies]
 alphafi_oracle = { local = "../alphafi_oracle" }
-BluefinSpot = { local = "../deps-mainnet/bluefin-spot-contract-interface-main"}
+BluefinSpot = { git = "https://github.com/fireflyprotocol/bluefin-spot-contract-interface.git", rev = "main"}
+
 
 # For remote import, use the `{ git = "...", subdir = "...", rev = "..." }`.
 # Revision can be a branch, a tag, and a commit hash.

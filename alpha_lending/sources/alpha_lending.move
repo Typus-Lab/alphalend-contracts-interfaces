@@ -22,6 +22,7 @@ module alpha_lending::alpha_lending {
     use std::type_name::{TypeName};
     use sui::table::{Table};
     use sui::sui::SUI;
+    use sui_system::sui_system::{SuiSystemState};
 
     // Error codes for alpha lending
     // When user tries to remove collateral more than the position has or allowed by the protocol   
@@ -141,7 +142,6 @@ module alpha_lending::alpha_lending {
         market_id: u64,
         amount: u64,
         clock: &Clock,
-        ctx: &mut TxContext
     ): LiquidityPromise<C> {
         abort 0
     }
@@ -284,8 +284,6 @@ module alpha_lending::alpha_lending {
     /// @return The fulfilled coin
     public fun fulfill_promise<C>(
         protocol: &mut LendingProtocol,
-        market_id: u64,
-        position_cap: &PositionCap,
         promise: LiquidityPromise<C>,
         clock: &Clock,
         ctx: &mut TxContext
@@ -303,9 +301,8 @@ module alpha_lending::alpha_lending {
     /// @return The fulfilled SUI coin
     public fun fulfill_promise_SUI(
         protocol: &mut LendingProtocol,
-        market_id: u64,
-        position_cap: &PositionCap,
         promise: LiquidityPromise<SUI>,
+        system_state: &mut SuiSystemState,
         clock: &Clock,
         ctx: &mut TxContext
     ): Coin<SUI> {
