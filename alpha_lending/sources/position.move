@@ -101,6 +101,11 @@ module alpha_lending::position {
     ) : bool {
         abort 0
     }
-    
+
+    public fun get_position_id (
+        position_cap: &PositionCap,
+    ) : ID {
+	abort 0
+    }
     
 } 
