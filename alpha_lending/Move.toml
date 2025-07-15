@@ -23,7 +23,7 @@ BluefinSpot = { git = "https://github.com/fireflyprotocol/bluefin-spot-contract-
 # Override = { local = "../conflicting/version", override = true }
 
 [addresses]
-alpha_lending = "0xd631cd66138909636fc3f73ed75820d0c5b76332d1644608ed1c85ea2b8219b4"
+alpha_lending = "0x632bc1aee1c0c0d96221676e1810ffef3194d25bc605f44e28929ce3c9941306"
 
 # Named addresses will be accessible in Move as `@name`. They're also exported:
 # for example, `std = "0x1"` is exported by the Standard Library.
