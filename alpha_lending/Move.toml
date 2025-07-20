@@ -1,7 +1,7 @@
 [package]
 name = "alpha_lending"
 edition = "2024.beta" # edition = "legacy" to use legacy (pre-2024) Move
-published-at = "0xee754fc0c6d977403c9218cedbfffed033b4b42b50a65c2c3f1c7be13efeafd2"
+published-at = "0x632bc1aee1c0c0d96221676e1810ffef3194d25bc605f44e28929ce3c9941306"
 # license = ""           # e.g., "MIT", "GPL", "Apache 2.0"
 # authors = ["..."]      # e.g., ["Joe Smith (joesmith@noemail.com)", "John Snow (johnsnow@noemail.com)"]
 #override_annotated_versions = "framework/testnet" 
@@ -9,6 +9,8 @@ published-at = "0xee754fc0c6d977403c9218cedbfffed033b4b42b50a65c2c3f1c7be13efeaf
 [dependencies]
 alphafi_oracle = { local = "../alphafi_oracle" }
 BluefinSpot = { git = "https://github.com/fireflyprotocol/bluefin-spot-contract-interface.git", rev = "main"}
+CetusClmm = { git = "https://github.com/CetusProtocol/cetus-clmm-interface.git", subdir = "sui/cetus_clmm", rev = "main" }
+IntegerMate = { git = "https://github.com/CetusProtocol/integer-mate.git", rev = "sui-v1.2.0", subdir = "sui", override=true}
 
 
 # For remote import, use the `{ git = "...", subdir = "...", rev = "..." }`.
@@ -24,6 +26,7 @@ BluefinSpot = { git = "https://github.com/fireflyprotocol/bluefin-spot-contract-
 
 [addresses]
 alpha_lending = "0xd631cd66138909636fc3f73ed75820d0c5b76332d1644608ed1c85ea2b8219b4"
+cetus_clmm = "0x1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb"
 
 # Named addresses will be accessible in Move as `@name`. They're also exported:
 # for example, `std = "0x1"` is exported by the Standard Library.
