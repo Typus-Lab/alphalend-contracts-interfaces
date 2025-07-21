@@ -9,6 +9,7 @@ module alpha_lending::position {
     use alpha_lending::market::{XToken, Market};
     use alpha_lending::rewards::{UserRewardDistributor};
     use alphafi_stdlib::math::Number;
+    use std::string::{Self,String,utf8};
 
 
 /// Error when attempting to liquidate a healthy position
@@ -36,6 +37,7 @@ module alpha_lending::position {
         id: UID,
         position_id: ID,
         client_address: address,
+        image_url: String
     }
 
     public struct Position has store, key {  

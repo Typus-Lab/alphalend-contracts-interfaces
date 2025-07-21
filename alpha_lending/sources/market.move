@@ -86,7 +86,7 @@ module alpha_lending::market {
 
    
 
-    public struct LiquidityPromise<phantom C> has store {
+    public struct LiquidityPromise<phantom C>{
         market_id: u64,
         coin_type: TypeName,
         liquidity_promise: u64,

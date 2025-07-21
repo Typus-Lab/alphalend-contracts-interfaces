@@ -91,6 +91,23 @@ module alpha_lending::alpha_lending {
         max_liquidation_fee_bps: u64,
         lp_position_safe_collateral_ratio: u8,
         lp_position_liquidation_threshold: u8,
+        reward_autocompounding: bool,
+        pegged_position_config: vector<PeggedPostionPair>,
+        multiplier_position_config: vector<MultiplierPositionConfig>,
+        sui_staking_enabled: bool
+    }
+
+    public struct PeggedPostionPair has store {
+        borrow_coin_type: TypeName,
+        deposit_coin_type: TypeName,
+        pegged_position_safe_collateral_ratio: u8,
+        pegged_position_liquidation_threshold: u8,
+    }
+
+    public struct MultiplierPositionConfig has store {
+        coin_type: TypeName,
+        multiplier_position_safe_collateral_ratio: u8,
+        multiplier_position_liquidation_threshold: u8,
     }
 
 
