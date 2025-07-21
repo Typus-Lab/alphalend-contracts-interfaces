@@ -19,7 +19,7 @@ rev = "sui-contract-mainnet"
 #[dependencies.Wormhole]
 #git = "https://github.com/wormhole-foundation/wormhole.git"
 #subdir = "sui/wormhole"
-#rev = "sui-upgrade-mainnet"
+#rev = "sui/mainnet"
 #git = "https://github.com/wormhole-foundation/wormhole.git"
 #subdir = "sui/wormhole"
 #rev = "sui-upgrade-testnet"
