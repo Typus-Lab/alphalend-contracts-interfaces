@@ -1,7 +1,7 @@
 [package]
 name = "alpha_lending"
 edition = "2024.beta" # edition = "legacy" to use legacy (pre-2024) Move
-published-at = "0x632bc1aee1c0c0d96221676e1810ffef3194d25bc605f44e28929ce3c9941306"
+published-at = "0xc8a5487ce3e5b78644f725f83555e1c65c38f0424a72781ed5de4f0369725c79"
 # license = ""           # e.g., "MIT", "GPL", "Apache 2.0"
 # authors = ["..."]      # e.g., ["Joe Smith (joesmith@noemail.com)", "John Snow (johnsnow@noemail.com)"]
 #override_annotated_versions = "framework/testnet" 
