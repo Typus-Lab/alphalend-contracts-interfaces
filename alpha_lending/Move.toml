@@ -4,12 +4,12 @@ edition = "2024.beta" # edition = "legacy" to use legacy (pre-2024) Move
 published-at = "0xc8a5487ce3e5b78644f725f83555e1c65c38f0424a72781ed5de4f0369725c79"
 # license = ""           # e.g., "MIT", "GPL", "Apache 2.0"
 # authors = ["..."]      # e.g., ["Joe Smith (joesmith@noemail.com)", "John Snow (johnsnow@noemail.com)"]
-#override_annotated_versions = "framework/testnet" 
+#override_annotated_versions = "framework/testnet"
 
 [dependencies]
 alphafi_oracle = { local = "../alphafi_oracle" }
-BluefinSpot = { git = "https://github.com/fireflyprotocol/bluefin-spot-contract-interface.git", rev = "main"}
-CetusClmm = { git = "https://github.com/CetusProtocol/cetus-clmm-interface.git", subdir = "sui/cetus_clmm", rev = "main" }
+BluefinSpot = { git = "https://github.com/fireflyprotocol/bluefin-spot-contract-interface.git", rev = "e2e9e647bbf3412465798aec29654f14311fdbca"}
+CetusClmm = { git = "https://github.com/CetusProtocol/cetus-clmm-interface.git", subdir = "sui/cetus_clmm", rev = "280c364c123e5ea70e279d06412194bf0be1a265" }
 IntegerMate = { git = "https://github.com/CetusProtocol/integer-mate.git", rev = "sui-v1.2.0", subdir = "sui", override=true}
 
 
